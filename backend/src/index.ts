@@ -33,6 +33,17 @@ const corsUrl =
     : /localhost/;
 
 const app = new Elysia()
+  .onBeforeHandle(({ request, set }) => {
+    const apiKey = request.headers.get("X-API-Key");
+
+    if (!apiKey || apiKey !== Bun.env.API_KEY) {
+      set.status = 401;
+      return {
+        message: "error",
+        error: "Unauthorized"
+      };
+    }
+  })
   .use(
     cors({
       origin: corsUrl,
