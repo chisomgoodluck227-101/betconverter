@@ -34,6 +34,13 @@ const corsUrl =
 
 const app = new Elysia()
   .onBeforeHandle(({ request, set }) => {
+    const url = new URL(request.url);
+
+    // Public health check for UptimeRobot
+    if (url.pathname === "/health") {
+      return;
+    }
+
     const apiKey = request.headers.get("X-API-Key");
 
     if (!apiKey || apiKey !== Bun.env.API_KEY) {
@@ -89,6 +96,9 @@ const app = new Elysia()
   // })
   .use(home)
   .use(bookies)
+  .get("/health", () => ({
+    status: "ok"
+  }))
   .listen(3011);
 
 console.log(
